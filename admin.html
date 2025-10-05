@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teacher Portal – Hankai House Points</title>
+    <title>Portal – Hankai House Points</title>
     <link rel="stylesheet" href="style.css" />
     <!-- Load core script first, then admin specific script -->
     <script src="script.js" defer></script>
@@ -24,7 +24,9 @@
       </div>
     </header>
     <main>
-      <h1>Teacher Portal</h1>
+      <h1>Portal</h1>
+      <!-- Display actions left for teachers (hidden for admin) -->
+      <p id="actionsLeft" class="actions-left" style="display:none;"></p>
       <div class="admin-portal">
         <!-- Panel for adding points -->
         <div class="panel">
@@ -49,6 +51,11 @@
           <div class="updates">
             <h2>Recent Updates</h2>
             <ul id="updatesList"></ul>
+          </div>
+          <!-- Admin actions: only visible to admin role -->
+          <div id="adminActions" style="display:none; margin-top: 1rem;">
+            <button id="undoBtn">Undo Last</button>
+            <button id="resetBtn">Reset All</button>
           </div>
         </div>
       </div>
