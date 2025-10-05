@@ -1,0 +1,337 @@
+/*
+ * Hankai House Points Website Stylesheet
+ *
+ * This CSS file defines the look and feel of the Hankai House Points website.
+ * The colour palette is inspired by the house colours and is used consistently
+ * throughout the site. The layout is responsive and aims to mirror the
+ * reference design provided by the user, with a clean navigation bar,
+ * colourful score bars and clear typography.
+ */
+
+/* Colour variables for each house */
+:root {
+  --colour-odin:    #0c4a33; /* deep green for Odin */
+  --colour-athena:  #2d6a91; /* teal blue for Athena */
+  --colour-ra:      #d68a1c; /* golden orange for Ra */
+  --colour-awilix:  #6c4c91; /* royal purple for Awilix */
+  --colour-primary: #ffffff; /* white background */
+  --colour-light:   #f5f5f5; /* light grey for sections */
+  --colour-dark:    #222222; /* dark text */
+  --colour-accent:  #0d6efd; /* accent colour for buttons */
+}
+
+/* Reset margin and set base typography */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background: var(--colour-light);
+  colour: var(--colour-dark);
+  line-height: 1.6;
+}
+
+/* Header and navigation */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: var(--colour-primary);
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+header .brand {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+header .brand img {
+  height: 32px;
+  margin-right: 0.5rem;
+}
+
+nav a {
+  margin: 0 0.75rem;
+  text-decoration: none;
+  colour: var(--colour-dark);
+  font-weight: 500;
+  position: relative;
+}
+
+nav a:hover,
+nav a.active {
+  colour: var(--colour-accent);
+}
+
+header .auth a {
+  text-decoration: none;
+  background: var(--colour-accent);
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+header .auth a:hover {
+  opacity: 0.85;
+}
+
+/* Main content */
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+/* Scoreboard styles */
+.scoreboard {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.house-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  colour: #ffffff;
+  overflow: hidden;
+}
+
+.house-row .bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.15);
+  width: 0;
+  z-index: 1;
+}
+
+.house-row .info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.house-row img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.house-row .name {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.house-row .points {
+  font-size: 1.2rem;
+  font-weight: 700;
+  z-index: 2;
+}
+
+/* Updates list */
+.updates {
+  margin-top: 2rem;
+  background: var(--colour-primary);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.updates ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.updates li {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+
+.updates li:last-child {
+  border-bottom: none;
+}
+
+/* House information cards */
+.house-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.house-card {
+  background: var(--colour-primary);
+  border-radius: 8px;
+  /* Allow content to overflow naturally so tall logos are not cropped */
+  overflow: visible;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.house-card:nth-child(1) {
+  border-left: 8px solid var(--colour-odin);
+}
+
+.house-card:nth-child(2) {
+  border-left: 8px solid var(--colour-awilix);
+}
+
+.house-card:nth-child(3) {
+  border-left: 8px solid var(--colour-athena);
+}
+
+.house-card:nth-child(4) {
+  border-left: 8px solid var(--colour-ra);
+}
+
+.house-card img {
+  /*
+   * Make house logos more prominent and avoid cropping. Using
+   * object-fit: contain preserves the full logo artwork while a
+   * consistent width and padding give breathing room. A subtle
+   * background colour helps the logos stand out against the white
+   * cards.
+   */
+  width: 180px;
+  height: auto;
+  flex-shrink: 0;
+  object-fit: contain;
+  background: var(--colour-light);
+  border-radius: 8px;
+  padding: 0.5rem;
+  margin: 1rem;
+}
+
+.house-card .card-content {
+  padding: 1rem 1rem 1rem 0;
+  flex: 1;
+}
+
+.house-card h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.house-card p {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.house-card strong {
+  font-weight: 600;
+}
+
+/* Forms */
+form {
+  max-width: 500px;
+  margin: 0 auto;
+  background: var(--colour-primary);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+form h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background: var(--colour-accent);
+  colour: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.error {
+  colour: #d63031;
+  font-size: 0.9rem;
+  margin-top: -0.75rem;
+  margin-bottom: 1rem;
+}
+
+.admin-portal {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .admin-portal {
+    flex-direction: row;
+  }
+  .admin-portal .panel {
+    flex: 1;
+  }
+}

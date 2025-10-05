@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Portal – Hankai House Points</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Load core script first, then admin specific script -->
+    <script src="script.js" defer></script>
+    <script src="admin.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span>Hankai House</span>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="houses.html">My House</a>
+        <a href="rules.html">Rules</a>
+      </nav>
+      <div class="auth">
+        <a href="#" id="logoutBtn">Log Out</a>
+      </div>
+    </header>
+    <main>
+      <h1>Teacher Portal</h1>
+      <div class="admin-portal">
+        <!-- Panel for adding points -->
+        <div class="panel">
+          <h2>Award / Deduct Points</h2>
+          <label for="houseSelect">Select House</label>
+          <select id="houseSelect">
+            <option value="Odin">Odin</option>
+            <option value="Awilix">Awilix</option>
+            <option value="Athena">Athena</option>
+            <option value="Ra">Ra</option>
+          </select>
+          <label for="pointsInput">Points</label>
+          <input id="pointsInput" type="number" placeholder="e.g. 50 or -10" />
+          <label for="reasonInput">Reason</label>
+          <input id="reasonInput" type="text" placeholder="Reason for points" />
+          <button id="addPointsBtn">Submit</button>
+        </div>
+        <!-- Panel showing scoreboard and updates -->
+        <div class="panel">
+          <h2>Current Standings</h2>
+          <div id="scoreboard" class="scoreboard"></div>
+          <div class="updates">
+            <h2>Recent Updates</h2>
+            <ul id="updatesList"></ul>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

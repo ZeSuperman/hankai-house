@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Login</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- The main script is not needed on the login page, but we include a
+         dedicated login script to handle authentication. -->
+    <script src="login.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span>Hankai House</span>
+      </div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="houses.html">My House</a>
+        <a href="rules.html">Rules</a>
+      </nav>
+      <div class="auth">
+        <!-- no login link since we are already on the login page -->
+      </div>
+    </header>
+    <main>
+      <form id="loginForm">
+        <h2>Teacher Login</h2>
+        <label for="username">Username</label>
+        <input id="username" type="text" required />
+        <label for="password">Password</label>
+        <input id="password" type="password" required />
+        <p id="loginError" class="error" style="display: none;"></p>
+        <button type="submit">Log In</button>
+      </form>
+    </main>
+  </body>
+</html>
