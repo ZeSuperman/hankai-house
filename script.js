@@ -22,22 +22,23 @@ const DEFAULT_HOUSES = {
   'Odin': {
     points: 4500,
     colour: getCSSVariable('--colour-odin'),
-    img: 'images/odin.jpeg'
+    // Load images from the root because GitHub Pages serves assets from the repo root
+    img: 'odin.jpeg'
   },
   'Athena': {
     points: 3800,
     colour: getCSSVariable('--colour-athena'),
-    img: 'images/athena.jpeg'
+    img: 'athena.jpeg'
   },
   'Ra': {
     points: 3200,
     colour: getCSSVariable('--colour-ra'),
-    img: 'images/ra.jpg'
+    img: 'ra.jpg'
   },
   'Awilix': {
     points: 2990,
     colour: getCSSVariable('--colour-awilix'),
-    img: 'images/awilix.jpg'
+    img: 'awilix.jpg'
   }
 };
 
@@ -80,7 +81,20 @@ function saveUpdates(updates) {
  * @param {string} reason  - Reason for the change
  * @returns {boolean}      - True if update succeeded
  */
-function updateHousePoints(name, delta, reason) {
+/**
+ * Update house points and log an update entry.
+ *
+ * Optionally accepts the name of the teacher performing the update. When
+ * provided, the teacher name is included in the updates list so that
+ * administrators can see who made each change.
+ *
+ * @param {string} name    - House name
+ * @param {number} delta   - Points to add (positive or negative)
+ * @param {string} reason  - Reason for the change
+ * @param {string} [teacher] - Name of the teacher performing the update
+ * @returns {boolean}      - True if update succeeded
+ */
+function updateHousePoints(name, delta, reason, teacher) {
   const houses = getHouses();
   if (!houses[name]) {
     console.warn(`Attempted to update unknown house: ${name}`);
@@ -95,6 +109,7 @@ function updateHousePoints(name, delta, reason) {
     house: name,
     delta: Number(delta),
     reason: reason || 'Update',
+    teacher: teacher || null,
     timestamp: Date.now()
   });
   // Limit the updates list to the most recent 20 entries
@@ -103,6 +118,41 @@ function updateHousePoints(name, delta, reason) {
   }
   saveUpdates(updates);
   return true;
+}
+
+/**
+ * Undo the last update entry. Removes the most recent update from the
+ * log and reverses the corresponding points change.
+ *
+ * @returns {boolean} True if an update was undone, false if there was
+ * nothing to undo
+ */
+function undoLastUpdate() {
+  const updates = getUpdates();
+  if (updates.length === 0) return false;
+  const last = updates.shift();
+  const houses = getHouses();
+  if (houses[last.house]) {
+    houses[last.house].points -= last.delta;
+    saveHouses(houses);
+  }
+  saveUpdates(updates);
+  return true;
+}
+
+/**
+ * Reset all houses to their default point values and clear the updates
+ * history. Useful at the start of a new academic year.
+ */
+function resetAllPoints() {
+  const houses = getHouses();
+  Object.keys(houses).forEach(name => {
+    if (DEFAULT_HOUSES[name]) {
+      houses[name].points = DEFAULT_HOUSES[name].points;
+    }
+  });
+  saveHouses(houses);
+  saveUpdates([]);
 }
 
 /**
@@ -170,10 +220,10 @@ function renderUpdates(listId = 'updatesList') {
     const li = document.createElement('li');
     const sign = entry.delta > 0 ? '+' : '';
     const date = new Date(entry.timestamp);
-    // Show month/day and time in 24h format
     const options = { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     const timestamp = date.toLocaleString(undefined, options);
-    li.textContent = `${entry.house}: ${sign}${entry.delta} pts — ${entry.reason} (${timestamp})`;
+    const teacherStr = entry.teacher ? ` (by ${entry.teacher})` : '';
+    li.textContent = `${entry.house}: ${sign}${entry.delta} pts — ${entry.reason}${teacherStr} (${timestamp})`;
     list.appendChild(li);
   });
 }
@@ -183,6 +233,8 @@ window.housePoints = {
   initData,
   getHouses,
   updateHousePoints,
+  undoLastUpdate,
+  resetAllPoints,
   renderScoreboard,
   renderUpdates
 };

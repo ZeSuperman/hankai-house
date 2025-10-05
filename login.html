@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teacher Login</title>
+    <title>Login</title>
     <link rel="stylesheet" href="style.css" />
     <!-- The main script is not needed on the login page, but we include a
          dedicated login script to handle authentication. -->
@@ -25,11 +25,12 @@
     </header>
     <main>
       <form id="loginForm">
-        <h2>Teacher Login</h2>
+        <h2>Login</h2>
         <label for="username">Username</label>
-        <input id="username" type="text" required />
+        <!-- Generic username field that works for both teachers and admin -->
+        <input id="username" type="text" placeholder="Enter your username" required />
         <label for="password">Password</label>
-        <input id="password" type="password" required />
+        <input id="password" type="password" placeholder="Enter your password" required />
         <p id="loginError" class="error" style="display: none;"></p>
         <button type="submit">Log In</button>
       </form>
