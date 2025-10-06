@@ -146,12 +146,12 @@ function undoLastUpdate() {
  */
 function resetAllPoints() {
   const houses = getHouses();
+  // Set all house points to zero instead of resetting to defaults
   Object.keys(houses).forEach(name => {
-    if (DEFAULT_HOUSES[name]) {
-      houses[name].points = DEFAULT_HOUSES[name].points;
-    }
+    houses[name].points = 0;
   });
   saveHouses(houses);
+  // Clear update history when resetting
   saveUpdates([]);
 }
 
@@ -250,4 +250,38 @@ document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('updatesList')) {
     renderUpdates();
   }
+
+  // Update authentication UI: display logged in user and provide logout link.
+  (function updateAuthUI() {
+    const authContainer = document.querySelector('header .auth');
+    if (!authContainer) return;
+    const role = sessionStorage.getItem('role');
+    const username = sessionStorage.getItem('username');
+    const house = sessionStorage.getItem('house');
+    // If user is logged in (teacher or admin)
+    if (role) {
+      // Clear existing content
+      authContainer.innerHTML = '';
+      // Create name display
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'user-name';
+      if (role === 'admin') {
+        nameSpan.textContent = 'Admin';
+      } else {
+        nameSpan.textContent = `${username}${house ? ' of ' + house : ''}`;
+      }
+      authContainer.appendChild(nameSpan);
+      // Create logout link
+      const logoutLink = document.createElement('a');
+      logoutLink.href = '#';
+      logoutLink.textContent = 'Log Out';
+      logoutLink.addEventListener('click', e => {
+        e.preventDefault();
+        sessionStorage.clear();
+        // Redirect to home page on logout
+        window.location.href = 'index.html';
+      });
+      authContainer.appendChild(logoutLink);
+    }
+  })();
 });
