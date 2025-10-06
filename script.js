@@ -228,6 +228,39 @@ function renderUpdates(listId = 'updatesList') {
   });
 }
 
+// -----------------------------------------------------------------------------
+// UI helpers for authentication
+//
+// When a user (teacher or admin) is logged in the username and a logout link
+// should be displayed in the top right corner of each page.  Because all
+// pages include script.js, we hook a DOMContentLoaded handler here to
+// update the auth area.  If no user is logged in the default “Log In” link
+// remains unchanged.  Clicking the logout link clears session storage and
+// returns the user to the home page.
+
+document.addEventListener('DOMContentLoaded', () => {
+  const authDiv = document.querySelector('header .auth');
+  if (!authDiv) return;
+  const role = sessionStorage.getItem('role');
+  const username = sessionStorage.getItem('username');
+  if (role) {
+    // Determine name to display: Admin or teacher's username
+    const nameToShow = role === 'admin' ? 'Admin' : username;
+    // Replace the auth area with name and logout link
+    authDiv.innerHTML =
+      `<span class="user-name">${nameToShow}</span> ` +
+      `<a href="#" id="navLogoutBtn">Log Out</a>`;
+    // Attach logout handler
+    const navLogoutBtn = document.getElementById('navLogoutBtn');
+    navLogoutBtn.addEventListener('click', ev => {
+      ev.preventDefault();
+      sessionStorage.clear();
+      // Reload to index page after logout
+      window.location.href = 'index.html';
+    });
+  }
+});
+
 // Expose functions globally for admin page to use
 window.housePoints = {
   initData,
