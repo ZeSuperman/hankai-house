@@ -25,46 +25,93 @@ document.addEventListener('DOMContentLoaded', () => {
   const resetBtn = document.getElementById('resetBtn');
   const adminActionsContainer = document.getElementById('adminActions');
   const logoutBtn = document.getElementById('logoutBtn');
+  const welcomeEl = document.getElementById('welcomeMsg');
   // Render initial scoreboard and updates
   renderScoreboard('scoreboard');
   renderUpdates('updatesList');
+
+  // Set welcome message based on role
+  if (welcomeEl) {
+    if (role === 'admin') {
+      welcomeEl.textContent = 'Welcome Admin';
+    } else {
+      welcomeEl.textContent = `Welcome ${username} of ${house}`;
+    }
+  }
   /**
-   * Compute key for tracking teacher actions per day. Uses normalized
-   * username (lowercase, no spaces) and current date.
+   * Compute a storage key for tracking teacher point totals per day. Uses
+   * the action type ("added" or "deducted"), normalized username and
+   * current date. This allows us to cap how many points a teacher can
+   * award or deduct in a single day. Admins are exempt from these
+   * limits.
+   *
+   * @param {string} type - Either 'added' or 'deducted'
+   * @returns {string}    - The generated localStorage key
    */
-  function actionKey() {
+  function pointsKey(type) {
     const date = new Date().toISOString().slice(0, 10); // YYYY‑MM‑DD
     const normalized = username ? username.toLowerCase().replace(/\s+/g, '') : '';
-    return `count_${normalized}_${date}`;
+    return `${type}_${normalized}_${date}`;
   }
+
   /**
-   * Get number of remaining actions for the current teacher today.
-   * Teachers are limited to five actions per day. Admins have no limit.
+   * Get the total number of points added by this teacher today.
    */
-  function remainingActions() {
-    if (role === 'admin') return Infinity;
-    const used = parseInt(localStorage.getItem(actionKey())) || 0;
-    return Math.max(0, 5 - used);
+  function currentAdded() {
+    return parseInt(localStorage.getItem(pointsKey('added'))) || 0;
   }
+
   /**
-   * Update the actions left display and disable the submit button if
-   * necessary. Only applies to teachers.
+   * Get the total number of points deducted by this teacher today (stored as
+   * positive numbers).
+   */
+  function currentDeducted() {
+    return parseInt(localStorage.getItem(pointsKey('deducted'))) || 0;
+  }
+
+  /**
+   * Update the display showing how many points a teacher has left to
+   * award or deduct today. For teachers, the daily cap is 200 points
+   * added and 200 points deducted. Admins do not see this.
    */
   function updateActionsDisplay() {
     if (role === 'admin') return;
-    const remaining = remainingActions();
+    const addRemaining = 200 - currentAdded();
+    const deductRemaining = 200 - currentDeducted();
     actionsLeftEl.style.display = 'block';
-    actionsLeftEl.textContent = `Actions left today: ${remaining}`;
-    addBtn.disabled = remaining <= 0;
+    actionsLeftEl.textContent = `Points left today – Add: ${addRemaining} pts, Deduct: ${deductRemaining} pts`;
+    // Disable the add button if both limits are exhausted
+    addBtn.disabled = addRemaining <= 0 && deductRemaining <= 0;
   }
+
   /**
-   * Increment the action count for the current teacher for today.
+   * Attempt to record a points adjustment for this teacher. Returns
+   * true if the adjustment is within the daily cap, false otherwise. A
+   * positive delta counts towards the 'added' total and a negative delta
+   * (its absolute value) counts towards the 'deducted' total. Admins
+   * always return true.
+   *
+   * @param {number} delta - The number of points being applied (can be negative)
+   * @returns {boolean}   - Whether the operation is allowed
    */
-  function incrementActionCount() {
-    if (role === 'admin') return;
-    const key = actionKey();
-    const used = parseInt(localStorage.getItem(key)) || 0;
-    localStorage.setItem(key, used + 1);
+  function recordPoints(delta) {
+    if (role === 'admin') return true;
+    const amount = Math.abs(delta);
+    if (delta > 0) {
+      const used = currentAdded();
+      if (used + amount > 200) {
+        return false;
+      }
+      localStorage.setItem(pointsKey('added'), used + amount);
+      return true;
+    } else {
+      const used = currentDeducted();
+      if (used + amount > 200) {
+        return false;
+      }
+      localStorage.setItem(pointsKey('deducted'), used + amount);
+      return true;
+    }
   }
   // Role specific setup
   if (role === 'admin') {
@@ -99,16 +146,23 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('Please provide a brief reason for the adjustment.');
       return;
     }
-    // Teachers are limited to five actions per day
-    if (role !== 'admin' && remainingActions() <= 0) {
-      alert('You have reached your daily limit of five actions.');
-      return;
+    // Teachers are limited to 200 points added and 200 points deducted per day
+    if (role !== 'admin') {
+      const allowed = recordPoints(delta);
+      if (!allowed) {
+        if (delta > 0) {
+          alert('Daily limit reached: you cannot add more than 200 points today.');
+        } else {
+          alert('Daily limit reached: you cannot deduct more than 200 points today.');
+        }
+        return;
+      }
     }
     // Update points, passing teacher name if not admin
     const actor = role === 'admin' ? undefined : username;
     const success = updateHousePoints(selectedHouse, delta, reason, actor);
     if (success && role !== 'admin') {
-      incrementActionCount();
+      // Update the actions display to reflect new totals
       updateActionsDisplay();
     }
     // Clear input fields
@@ -137,9 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   // Logout handler: clear all session keys
-  logoutBtn.addEventListener('click', event => {
-    event.preventDefault();
-    sessionStorage.clear();
-    window.location.href = 'index.html';
-  });
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', event => {
+      event.preventDefault();
+      sessionStorage.clear();
+      window.location.href = 'index.html';
+    });
+  }
 });
